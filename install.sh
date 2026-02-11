@@ -196,7 +196,5 @@ main() {
     log "Enjoy your Xpense application!"
 }
 
-# Run main function if script is executed (not sourced)
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    main "$@"
-fi
+# Run main function
+main "$@"
