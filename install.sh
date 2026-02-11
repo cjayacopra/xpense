@@ -99,49 +99,71 @@ install_xpense() {
     
     # Create installation directory
     local install_dir="${HOME}/xpense"
-    log "Creating installation directory at ${install_dir}"
     if [ "$DRY_RUN" = false ]; then
-        mkdir -p "$install_dir"
+        if [ ! -d "$install_dir" ]; then
+            log "Creating installation directory at ${install_dir}"
+            mkdir -p "$install_dir"
+        fi
         cd "$install_dir"
+    else
+        log "Would create installation directory at ${install_dir}"
     fi
     
     # Clone the repository
-    log "Cloning repository..."
+    log "Preparing repository..."
     if [ "$DRY_RUN" = false ]; then
-        git clone https://github.com/cjayacopra/xpense.git .
+        if [ -d ".git" ]; then
+            warn "Repository already exists, pulling latest changes..."
+            git pull
+        else
+            git clone https://github.com/cjayacopra/xpense.git .
+        fi
+    fi
+
+    # Create .env file
+    log "Configuring environment..."
+    if [ "$DRY_RUN" = false ]; then
+        if [ ! -f ".env" ]; then
+            cp .env.example .env
+            # Set a placeholder key so containers can start
+            sed -i 's/APP_KEY=/APP_KEY=base64:YXp1cmUtbW9kZS1pbnN0YWxsYXRpb24ta2V5LXByb3ZpZGVyCg==/' .env
+        fi
     fi
     
     # Create database directory and file
-    # The Docker Compose configuration will mount this into the container
-    log "Creating database directory and file..."
+    log "Setting up database file..."
     if [ "$DRY_RUN" = false ]; then
         mkdir -p database
-        # The database file will be created automatically by Laravel when needed
-        # But we create an empty one to ensure the volume mount works correctly
         touch database/database.sqlite
-        chmod 664 database/database.sqlite
+        # Ensure it is writable by the container user (UID 1000 usually)
+        chmod 666 database/database.sqlite
     fi
     
-    # Pull the latest images
-    log "Pulling Docker images..."
+    # Build and start containers
+    log "Building and starting Docker containers..."
     if [ "$DRY_RUN" = false ]; then
-        docker compose pull
-    fi
-    
-    # Start Docker containers
-    log "Starting Docker containers..."
-    if [ "$DRY_RUN" = false ]; then
-        docker compose up -d
+        docker compose up -d --build
     fi
     
     # Wait for the application to be ready
     log "Waiting for application to start..."
     if [ "$DRY_RUN" = false ]; then
-        sleep 15
+        local max_attempts=12
+        local attempt=1
+        while [ $attempt -le $max_attempts ]; do
+            status=$(docker inspect -f '{{.State.Health.Status}}' xpense-app 2>/dev/null || echo "starting")
+            if [ "$status" == "healthy" ]; then
+                log "Application is healthy!"
+                break
+            fi
+            warn "Waiting for application to be healthy... (Attempt $attempt/$max_attempts)"
+            sleep 5
+            attempt=$((attempt + 1))
+        done
     fi
     
     # Generate application key
-    log "Generating application key..."
+    log "Generating final application key..."
     if [ "$DRY_RUN" = false ]; then
         docker compose exec app php artisan key:generate --force
     fi
@@ -154,9 +176,11 @@ install_xpense() {
     
     log "Installation completed successfully!"
     echo
+    echo -e "${GREEN}================================================================${NC}"
     log "Your Xpense application is now running at: http://localhost:8000"
     log "To stop the application, run: docker compose down"
     log "To view logs, run: docker compose logs -f"
+    echo -e "${GREEN}================================================================${NC}"
 }
 
 # Main execution

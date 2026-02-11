@@ -16,34 +16,22 @@ This application can be deployed using Docker with FrankenPHP and SQLite. All de
 - Docker
 - Docker Compose
 
-## Quick Deployment
+## Quick Installation (One-liner)
 
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/cjayacopra/xpense.git
-    cd xpense
-    ```
-
-2. Build and start the application:
-
-    ```bash
-    docker compose up -d --build
-    ```
-
-3. Run database migrations:
-
-    ```bash
-    docker compose exec app php artisan migrate --force
-    ```
-
-4. Access the application at http://localhost:8000
-
-## One-liner Installation
+The easiest way to get started is by running our automated installation script:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/cjayacopra/xpense/main/install.sh | bash
 ```
+
+This script will:
+1. Clone the repository to `~/xpense`
+2. Set up your environment and database
+3. Build and start the Docker containers
+4. Generate your application security keys
+5. Run all necessary migrations
+
+## Manual Deployment
 
 ## CI/CD Pipeline
 

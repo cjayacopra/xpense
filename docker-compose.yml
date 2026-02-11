@@ -7,10 +7,11 @@ services:
     restart: unless-stopped
     ports:
       - '8000:8000'
+    env_file:
+      - .env
     environment:
       APP_ENV: production
       APP_DEBUG: false
-      APP_KEY: ${APP_KEY}
       APP_URL: http://localhost:8000
       DB_CONNECTION: sqlite
       DB_DATABASE: /app/database/database.sqlite

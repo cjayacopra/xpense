@@ -28,6 +28,8 @@ yarn-error.log
 /.zed
 /.gemini
 /.agents
+/opencode.json
+/boost.json
 GEMINI.md
 AGENTS.md
 USAGE.md

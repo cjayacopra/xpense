@@ -2,6 +2,7 @@ FROM dunglas/frankenphp:latest
 
 # Install additional PHP extensions required by Laravel
 RUN install-php-extensions \
+    pdo_sqlite \
     pdo_mysql \
     mbstring \
     intl \
