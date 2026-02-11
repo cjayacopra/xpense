@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Xpense - One-liner installation script
-# Usage: curl -fsSL https://raw.githubusercontent.com/your-username/your-repo/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/cjayacopra/xpense/main/install.sh | bash
 
 set -e
 
@@ -18,7 +18,7 @@ error() { echo -e "${RED}[ERROR]${NC} $1"; }
 
 # Check if required tools are installed
 check_dependencies() {
-    local deps=("git" "docker" "docker-compose")
+    local deps=("git" "docker")
     local missing_deps=()
     
     for dep in "${deps[@]}"; do
@@ -46,52 +46,55 @@ install_xpense() {
     
     # Clone the repository
     log "Cloning repository..."
-    git clone https://github.com/your-username/your-repo.git .
+    git clone https://github.com/cjayacopra/xpense.git .
     
-    # Generate application key
-    log "Generating application key..."
-    local app_key=$(php -r "echo 'base64:' . base64_encode(random_bytes(32));" 2>/dev/null || echo "base64:your-generated-key-here")
+    # Create database directory
+    log "Creating database directory..."
+    mkdir -p database
     
-    # Create .env file
-    log "Creating environment file..."
-    cat > .env << EOF
-APP_NAME=Xpense
-APP_ENV=production
-APP_KEY=${app_key}
-APP_DEBUG=false
-APP_URL=http://localhost:8000
-
-DB_CONNECTION=sqlite
-DB_DATABASE=/app/database/database.sqlite
-
-SESSION_DRIVER=database
-QUEUE_CONNECTION=database
-CACHE_STORE=database
+    # Create SQLite database file
+    log "Creating SQLite database file..."
+    touch database/database.sqlite
+    
+    # Set proper permissions
+    log "Setting database permissions..."
+    chmod 664 database/database.sqlite
+    
+    # Create a simple docker-compose.override.yml for development
+    log "Creating docker-compose override file..."
+    cat > docker-compose.override.yml << EOF
+services:
+  app:
+    volumes:
+      - .:/app
+      - ./database:/app/database
 EOF
     
-    # Build and start Docker containers
-    log "Building and starting Docker containers..."
-    docker-compose up -d --build
+    # Pull the latest images
+    log "Pulling Docker images..."
+    docker compose pull
+    
+    # Start Docker containers
+    log "Starting Docker containers..."
+    docker compose up -d
     
     # Wait for the application to be ready
     log "Waiting for application to start..."
-    sleep 10
+    sleep 15
+    
+    # Generate application key
+    log "Generating application key..."
+    docker compose exec app php artisan key:generate --force
     
     # Run database migrations
     log "Running database migrations..."
-    docker-compose exec app php artisan migrate --force
-    
-    # Optimize Laravel
-    log "Optimizing Laravel..."
-    docker-compose exec app php artisan config:cache
-    docker-compose exec app php artisan route:cache
-    docker-compose exec app php artisan view:cache
+    docker compose exec app php artisan migrate --force
     
     log "Installation completed successfully!"
     echo
     log "Your Xpense application is now running at: http://localhost:8000"
-    log "To stop the application, run: docker-compose down"
-    log "To view logs, run: docker-compose logs -f"
+    log "To stop the application, run: docker compose down"
+    log "To view logs, run: docker compose logs -f"
 }
 
 # Main execution
