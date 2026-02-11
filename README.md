@@ -21,7 +21,7 @@ This application can be deployed using Docker with FrankenPHP and SQLite. All de
 1. Clone the repository:
 
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/cjayacopra/xpense.git
     cd xpense
     ```
 
@@ -54,6 +54,6 @@ The project includes a GitHub Actions workflow that:
 
 ## Managing the Application
 
-- Stop the application: `docker-compose down`
-- View logs: `docker-compose logs -f`
-- Rebuild: `docker-compose up -d --build`
+- Stop the application: `docker compose down`
+- View logs: `docker compose logs -f`
+- Rebuild: `docker compose up -d --build`
