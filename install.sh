@@ -111,34 +111,15 @@ install_xpense() {
         git clone https://github.com/cjayacopra/xpense.git .
     fi
     
-    # Create database directory
-    log "Creating database directory..."
+    # Create database directory and file
+    # The Docker Compose configuration will mount this into the container
+    log "Creating database directory and file..."
     if [ "$DRY_RUN" = false ]; then
         mkdir -p database
-    fi
-    
-    # Create SQLite database file
-    log "Creating SQLite database file..."
-    if [ "$DRY_RUN" = false ]; then
+        # The database file will be created automatically by Laravel when needed
+        # But we create an empty one to ensure the volume mount works correctly
         touch database/database.sqlite
-    fi
-    
-    # Set proper permissions
-    log "Setting database permissions..."
-    if [ "$DRY_RUN" = false ]; then
         chmod 664 database/database.sqlite
-    fi
-    
-    # Create a simple docker-compose.override.yml for development
-    log "Creating docker-compose override file..."
-    if [ "$DRY_RUN" = false ]; then
-        cat > docker-compose.override.yml << EOF
-services:
-  app:
-    volumes:
-      - .:/app
-      - ./database:/app/database
-EOF
     fi
     
     # Pull the latest images
