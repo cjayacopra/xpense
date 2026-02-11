@@ -46,20 +46,20 @@ This script will:
 3. Build and start the services:
 
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
 
 4. Run database migrations:
 
     ```bash
-    docker-compose exec app php artisan migrate --force
+    docker compose exec app php artisan migrate --force
     ```
 
 5. Optimize the Laravel application:
     ```bash
-    docker-compose exec app php artisan config:cache
-    docker-compose exec app php artisan route:cache
-    docker-compose exec app php artisan view:cache
+    docker compose exec app php artisan config:cache
+    docker compose exec app php artisan route:cache
+    docker compose exec app php artisan view:cache
     ```
 
 ## Accessing the Application

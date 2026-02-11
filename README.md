@@ -28,13 +28,13 @@ This application can be deployed using Docker with FrankenPHP and SQLite. All de
 2. Build and start the application:
 
     ```bash
-    docker-compose up -d --build
+    docker compose up -d --build
     ```
 
 3. Run database migrations:
 
     ```bash
-    docker-compose exec app php artisan migrate --force
+    docker compose exec app php artisan migrate --force
     ```
 
 4. Access the application at http://localhost:8000
