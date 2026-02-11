@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
 import { Wallet, Receipt, ArrowRight, Calendar, Tag, TrendingUp, TrendingDown, Plus, ArrowLeftRight } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -9,10 +9,10 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import transactions from '@/routes/transactions';
 import { type BreadcrumbItem } from '@/types';
-import { computed } from 'vue';
 
 interface Transaction {
     id: number;

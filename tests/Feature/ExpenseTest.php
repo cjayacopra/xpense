@@ -10,7 +10,7 @@ test('expenses page is displayed', function () {
 
     $response = $this
         ->actingAs($user)
-        ->get('/expenses');
+        ->get('/transactions');
 
     $response->assertOk();
 });
@@ -30,7 +30,7 @@ test('user can create an expense', function () {
 
     $response = $this
         ->actingAs($user)
-        ->post('/expenses', [
+        ->post('/transactions', [
             'type' => 'expense',
             'account_id' => $account->id,
             'category_id' => $category->id,
@@ -51,7 +51,7 @@ test('user cannot view others expenses', function () {
     $this->withoutMiddleware(\Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class);
     $user1 = User::factory()->create();
     $user2 = User::factory()->create();
-    
+
     $account = Account::create(['user_id' => $user2->id, 'name' => 'Other', 'balance' => 100]);
     $transaction = Transaction::create([
         'user_id' => $user2->id,
@@ -63,7 +63,7 @@ test('user cannot view others expenses', function () {
 
     $response = $this
         ->actingAs($user1)
-        ->delete("/expenses/{$transaction->id}");
+        ->delete("/transactions/{$transaction->id}");
 
     $response->assertForbidden();
 });

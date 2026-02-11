@@ -4,7 +4,7 @@ import {
     Plus, Tag, Trash2, Edit2, ShoppingCart, Utensils, Car, Home, 
     Zap, Heart, Gift, Briefcase, GraduationCap, Plane, Coffee 
 } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -23,9 +23,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 import categoriesRoutes from '@/routes/categories';
 import { type BreadcrumbItem } from '@/types';
-import { ref } from 'vue';
 
 interface Category {
     id: number;

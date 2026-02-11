@@ -3,7 +3,7 @@ import { Head, useForm } from '@inertiajs/vue3';
 import { 
     Plus, Wallet, Trash2, Landmark, CreditCard, Coins, PiggyBank, Edit2, Check 
 } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { ref, computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -22,9 +22,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 import accountsRoutes from '@/routes/accounts';
 import { type BreadcrumbItem } from '@/types';
-import { ref, computed } from 'vue';
 
 interface Account {
     id: number;

@@ -5,7 +5,7 @@ import {
     ShoppingCart, Utensils, Car, Home, Zap, Heart, Gift, Briefcase, GraduationCap, Plane, Coffee,
     ArrowLeftRight
 } from 'lucide-vue-next';
-import AppLayout from '@/layouts/AppLayout.vue';
+import { ref, computed } from 'vue';
 import { Button } from '@/components/ui/button';
 import {
     Card,
@@ -24,9 +24,9 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
 import transactionsRoutes from '@/routes/transactions';
 import { type BreadcrumbItem } from '@/types';
-import { ref, computed } from 'vue';
 
 interface Account {
     id: number;
