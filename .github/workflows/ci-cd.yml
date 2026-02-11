@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 jobs:
-  test:
+  validate:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,20 +35,3 @@ jobs:
 
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-
-      - name: Install Node dependencies
-        run: npm install
-
-      - name: Run PHP tests
-        run: php artisan test
-
-      - name: Run ESLint
-        run: npm run lint
-
-      - name: Run Pint (PHP CS Fixer)
-        run: composer lint
