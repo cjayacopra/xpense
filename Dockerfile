@@ -1,5 +1,8 @@
 FROM dunglas/frankenphp:latest
 
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
 # Install additional PHP extensions required by Laravel
 RUN install-php-extensions \
     pdo_sqlite \
