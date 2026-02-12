@@ -40,7 +40,7 @@ EXPOSE 8000
 ARG USER=appuser
 RUN useradd ${USER} \
     && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
-    && chown -R ${USER}:${USER} /app/storage /app/bootstrap/cache /data/caddy /config/caddy
+    && chown -R ${USER}:${USER} /app /data/caddy /config/caddy
 
 USER ${USER}
 

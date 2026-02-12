@@ -168,18 +168,10 @@ install_xpense() {
         done
     fi
     
-    # Generate application key
-    log "Generating final application key..."
-    if [ "$DRY_RUN" = false ]; then
-        # Use -T to avoid "input device is not a TTY" error
-        docker compose exec -T app php artisan key:generate --force
-        # Clear config cache to ensure the new key is picked up
-        docker compose exec -T app php artisan config:clear
-    fi
-    
     # Run database migrations
     log "Running database migrations..."
     if [ "$DRY_RUN" = false ]; then
+        # Use -T to avoid "input device is not a TTY" error
         docker compose exec -T app php artisan migrate --force
     fi
     
