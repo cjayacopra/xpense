@@ -1,3 +1,12 @@
+# Stage 1: Build frontend assets
+FROM node:20-alpine AS asset-builder
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
+
+# Stage 2: Final application image
 FROM dunglas/frankenphp:latest
 
 # Install Composer
@@ -28,6 +37,9 @@ RUN composer install --no-dev --no-scripts --no-progress --prefer-dist --optimiz
 
 # Copy application files
 COPY . .
+
+# Copy built assets from the previous stage
+COPY --from=asset-builder /app/public/build ./public/build
 
 # Set permissions for Laravel storage and bootstrap/cache directories
 RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \

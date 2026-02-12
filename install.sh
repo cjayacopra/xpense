@@ -141,7 +141,8 @@ install_xpense() {
     if [ "$DRY_RUN" = false ]; then
         mkdir -p database
         touch database/database.sqlite
-        # Ensure it is writable by the container user (UID 1000 usually)
+        # Ensure it is writable by the container user
+        chmod 777 database
         chmod 666 database/database.sqlite
     fi
     
@@ -154,7 +155,7 @@ install_xpense() {
     # Wait for the application to be ready
     log "Waiting for application to start..."
     if [ "$DRY_RUN" = false ]; then
-        local max_attempts=12
+        local max_attempts=15
         local attempt=1
         while [ $attempt -le $max_attempts ]; do
             status=$(docker inspect -f '{{.State.Health.Status}}' xpense-app 2>/dev/null || echo "starting")
@@ -163,7 +164,7 @@ install_xpense() {
                 break
             fi
             warn "Waiting for application to be healthy... (Attempt $attempt/$max_attempts)"
-            sleep 5
+            sleep 10
             attempt=$((attempt + 1))
         done
     fi
