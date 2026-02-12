@@ -1,47 +1,54 @@
 # Xpense - Laravel Expense Tracker
 
-A modern expense tracking application built with Laravel, Vue.js, and Inertia.js.
+A modern expense tracking application built with Laravel, Vue.js, Inertia.js, and Octane (FrankenPHP).
 
-## Deployment
+## Development Environment (Docker)
 
-This application can be deployed using Docker with FrankenPHP and SQLite. All deployment files have been prepared:
+This application is designed to work on every system with Docker. It uses **Laravel Octane** with **FrankenPHP** for high performance and **Vite** for a seamless frontend development experience.
 
-1. **Dockerfile** - Defines the application container using FrankenPHP
-2. **docker-compose.yml** - Orchestrates the application services
-3. **install.sh** - One-liner installation script
-4. **.github/workflows/ci-cd.yml** - GitHub Actions CI/CD pipeline
+### Prerequisites
 
-## Prerequisites
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
 
-- Docker
-- Docker Compose
+### Quick Start
 
-## Quick Installation (One-liner)
-
-The easiest way to get started is by running our automated installation script:
+The easiest way to set up the development environment is to run the installation script:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/cjayacopra/xpense/main/install.sh | bash
+chmod +x install.sh
+./install.sh
 ```
 
-This script will:
-1. Clone the repository to `~/xpense`
-2. Set up your environment and database
-3. Build and start the Docker containers
-4. Generate your application security keys
-5. Run all necessary migrations
+This will:
+1. Create your `.env` file.
+2. Prepare the SQLite database.
+3. Build and start the Docker containers.
+4. Install all PHP and Node dependencies.
+5. Generate application keys and run migrations.
 
-## Manual Deployment
+### Accessing the Application
 
-## CI/CD Pipeline
+- **Web Application**: [http://localhost:8000](http://localhost:8000)
+- **Vite Dev Server (HMR)**: [http://localhost:5173](http://localhost:5173)
 
-The project includes a GitHub Actions workflow that:
+### Common Commands
 
-- Runs tests on every push and pull request
-- Builds and pushes Docker images to Docker Hub on pushes to the main branch
+- **Start the environment**: `docker compose up -d`
+- **Stop the environment**: `docker compose down`
+- **View logs**: `docker compose logs -f`
+- **Run Artisan commands**: `docker compose exec app php artisan ...`
+- **Run Composer commands**: `docker compose exec app composer ...`
+- **Run NPM commands**: `docker compose exec app npm ...`
 
-## Managing the Application
+## Features
 
-- Stop the application: `docker compose down`
-- View logs: `docker compose logs -f`
-- Rebuild: `docker compose up -d --build`
+- **Laravel Octane**: Powered by FrankenPHP for supersonic performance.
+- **Inertia.js v2**: Build single-page apps using classic server-side routing.
+- **Vue.js 3**: Modern, reactive frontend components.
+- **Tailwind CSS v4**: Utility-first CSS framework for rapid styling.
+- **SQLite**: Zero-configuration database for easy portability.
+
+## Production Build (Standalone Binary)
+
+This project also supports building a standalone FrankenPHP binary. See `static-build.Dockerfile` for details.

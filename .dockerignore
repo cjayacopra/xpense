@@ -1,0 +1,16 @@
+.git
+.github
+.env
+.agents
+.gemini
+node_modules
+vendor
+tests
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+database/*.sqlite
+public/build
+static-build.Dockerfile
+frankenphp

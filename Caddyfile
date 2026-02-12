@@ -1,0 +1,17 @@
+{
+    frankenphp {
+        num_threads 1
+    }
+}
+
+:80 {
+    log
+    route {
+        root * public/
+        encode zstd br gzip
+        frankenphp_php_server {
+            index frankenphp-worker.php
+        }
+        file_server
+    }
+}

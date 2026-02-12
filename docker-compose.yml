@@ -1,27 +1,41 @@
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: xpense-app
-    restart: unless-stopped
-    ports:
-      - '8000:8080'
-    env_file:
-      - .env
-    environment:
-      # These will override the values in the embedded .env
-      APP_ENV: production
-      APP_DEBUG: false
-      APP_URL: http://localhost:8000
-      DB_CONNECTION: sqlite
-      DB_DATABASE: /app/database/database.sqlite
-    volumes:
-      # Map the database directory to persist data
-      - ./database:/app/database
-    networks:
-      - xpense-network
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: xpense-app
+        restart: unless-stopped
+        ports:
+            - "8000:80"
+        volumes:
+            - .:/app
+        environment:
+            APP_ENV: local
+            APP_DEBUG: "true"
+            APP_URL: http://localhost:8000
+            VITE_APP_URL: http://localhost:8000
+            DB_CONNECTION: sqlite
+            DB_DATABASE: /app/database/database.sqlite
+        networks:
+            - xpense-network
+
+    vite:
+        build:
+            context: .
+            dockerfile: Dockerfile
+        container_name: xpense-vite
+        restart: unless-stopped
+        working_dir: /app
+        command: npm run dev
+        ports:
+            - "5173:5173"
+        volumes:
+            - .:/app
+        environment:
+            VITE_APP_URL: http://localhost:8000
+        networks:
+            - xpense-network
 
 networks:
-  xpense-network:
-    driver: bridge
+    xpense-network:
+        driver: bridge
