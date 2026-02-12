@@ -54,13 +54,26 @@ touch database/database.sqlite
 chmod 666 database/database.sqlite
 
 # Build and start
-log "Building standalone binary (this may take several minutes)..."
+log "Building standalone binary (this will take several minutes)..."
 docker compose up -d --build
+
+# Wait for the application to be ready
+log "Waiting for application to start..."
+local max_attempts=30
+local attempt=1
+while [ $attempt -le $max_attempts ]; do
+    status=$(docker inspect -f '{{.State.Health.Status}}' xpense-app 2>/dev/null || echo "starting")
+    if [ "$status" == "healthy" ]; then
+        log "Application is healthy!"
+        break
+    fi
+    warn "Waiting for application to be healthy... (Attempt $attempt/$max_attempts)"
+    sleep 10
+    attempt=$((attempt + 1))
+done
 
 # Run migrations using the standalone binary
 log "Running database migrations..."
-# We wait a bit for the container to settle
-sleep 5
 docker compose exec -T app /xpense php-cli artisan migrate --force
 
 log "Installation completed successfully!"
