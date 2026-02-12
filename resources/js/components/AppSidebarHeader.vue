@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
-import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import ThemeSwitcher from '@/components/ThemeSwitcher.vue';
 import type { BreadcrumbItem } from '@/types';
 
 withDefaults(

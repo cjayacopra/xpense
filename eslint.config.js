@@ -1,21 +1,13 @@
-import vueTsEslintConfig from '@vue/eslint-config-typescript';
-import eslintConfigPrettier from 'eslint-config-prettier';
+import { defineConfigWithVueTs, vueTsConfigs } from '@vue/eslint-config-typescript';
+import prettier from 'eslint-config-prettier';
 import importPlugin from 'eslint-plugin-import';
-import pluginVue from 'eslint-plugin-vue';
+import vue from 'eslint-plugin-vue';
 
-export default [
-    ...pluginVue.configs['flat/essential'],
-    ...vueTsEslintConfig(),
+export default defineConfigWithVueTs(
+    vue.configs['flat/essential'],
+    vueTsConfigs.recommended,
     {
-        ignores: [
-            'vendor',
-            'node_modules',
-            'public',
-            'bootstrap/ssr',
-            'tailwind.config.js',
-            'vite.config.ts',
-            'resources/js/components/ui/*',
-        ],
+        ignores: ['vendor', 'node_modules', 'public', 'bootstrap/ssr', 'tailwind.config.js', 'vite.config.ts', 'resources/js/components/ui/*'],
     },
     {
         plugins: {
@@ -42,14 +34,7 @@ export default [
             'import/order': [
                 'error',
                 {
-                    groups: [
-                        'builtin',
-                        'external',
-                        'internal',
-                        'parent',
-                        'sibling',
-                        'index',
-                    ],
+                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling', 'index'],
                     alphabetize: {
                         order: 'asc',
                         caseInsensitive: true,
@@ -58,5 +43,5 @@ export default [
             ],
         },
     },
-    eslintConfigPrettier,
-];
+    prettier,
+);
