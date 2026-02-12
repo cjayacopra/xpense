@@ -44,11 +44,6 @@ RUN useradd ${USER} \
 
 USER ${USER}
 
-# Optimize Laravel for production
-RUN php artisan config:cache \
-    && php artisan route:cache \
-    && php artisan view:cache
-
 # Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD php artisan about --json | grep -q '"status":"ok"' || exit 1

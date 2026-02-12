@@ -125,8 +125,14 @@ install_xpense() {
     if [ "$DRY_RUN" = false ]; then
         if [ ! -f ".env" ]; then
             cp .env.example .env
-            # Set a placeholder key so containers can start
-            sed -i 's/APP_KEY=/APP_KEY=base64:YXp1cmUtbW9kZS1pbnN0YWxsYXRpb24ta2V5LXByb3ZpZGVyCg==/' .env
+            # Generate a unique valid 32-byte key on the host
+            log "Generating unique application key..."
+            if command -v openssl >/dev/null; then
+                GEN_KEY=$(openssl rand -base64 32)
+            else
+                GEN_KEY=$(head -c 32 /dev/urandom | base64 | tr -d '\n')
+            fi
+            sed -i "s|APP_KEY=|APP_KEY=base64:$GEN_KEY|" .env
         fi
     fi
     
@@ -165,13 +171,16 @@ install_xpense() {
     # Generate application key
     log "Generating final application key..."
     if [ "$DRY_RUN" = false ]; then
-        docker compose exec app php artisan key:generate --force
+        # Use -T to avoid "input device is not a TTY" error
+        docker compose exec -T app php artisan key:generate --force
+        # Clear config cache to ensure the new key is picked up
+        docker compose exec -T app php artisan config:clear
     fi
     
     # Run database migrations
     log "Running database migrations..."
     if [ "$DRY_RUN" = false ]; then
-        docker compose exec app php artisan migrate --force
+        docker compose exec -T app php artisan migrate --force
     fi
     
     log "Installation completed successfully!"
