@@ -33,3 +33,6 @@ yarn-error.log
 GEMINI.md
 AGENTS.md
 USAGE.md
+**/caddy
+frankenphp
+frankenphp-worker.php

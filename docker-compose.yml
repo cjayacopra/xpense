@@ -6,31 +6,21 @@ services:
     container_name: xpense-app
     restart: unless-stopped
     ports:
-      - '8000:8000'
+      - '8000:8080'
     env_file:
       - .env
     environment:
+      # These will override the values in the embedded .env
       APP_ENV: production
       APP_DEBUG: false
       APP_URL: http://localhost:8000
       DB_CONNECTION: sqlite
       DB_DATABASE: /app/database/database.sqlite
     volumes:
+      # Map the database directory to persist data
       - ./database:/app/database
-      - caddy_data:/data/caddy
-      - caddy_config:/config/caddy
     networks:
       - xpense-network
-    healthcheck:
-      test: ['CMD', 'php', 'artisan', 'about', '--json']
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-
-volumes:
-  caddy_data:
-  caddy_config:
 
 networks:
   xpense-network:

@@ -6,59 +6,49 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-# Stage 2: Final application image
-FROM dunglas/frankenphp:latest
+# Stage 2: Install PHP dependencies
+FROM composer:latest AS vendor-builder
+WORKDIR /app
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --no-scripts --no-progress --prefer-dist --optimize-autoloader
+COPY . .
+# Remove node_modules to keep the binary small
+RUN rm -rf node_modules
 
-# Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+# Stage 3: Build the standalone binary
+# We use the static-builder image to bundle PHP, Caddy, and our App
+FROM dunglas/frankenphp:static-builder AS binary-builder
 
-# Install additional PHP extensions required by Laravel
-RUN install-php-extensions \
-    pdo_sqlite \
-    pdo_mysql \
-    mbstring \
-    intl \
-    zip \
-    exif \
-    pcntl \
-    bcmath \
-    gd \
-    redis \
-    opcache
+# Copy the entire app from the vendor-builder stage
+COPY --from=vendor-builder /app /go/src/app/
+# Copy the built assets from the asset-builder stage
+COPY --from=asset-builder /app/public/build /go/src/app/public/build
 
-# Set working directory
+WORKDIR /go/src/app
+
+# Build the static binary
+# We include necessary extensions for Laravel (sqlite, pcntl, etc.)
+RUN EMBED=/go/src/app/ \
+    PHP_EXTENSIONS=pdo_sqlite,mbstring,intl,zip,exif,pcntl,bcmath,gd,redis,opcache \
+    ./build-static.sh
+
+# Stage 4: Final minimal image
+FROM scratch
+
+# Copy the produced binary from the builder
+COPY --from=binary-builder /go/src/app/dist/frankenphp-linux-x86_64 /xpense
+
+# Set the working directory to where the binary expects the app to be (embedded)
 WORKDIR /app
 
-# Copy composer files
-COPY composer.json composer.lock ./
+# Copy the sqlite database from host if it exists, or let the app create it
+# Note: For standalone binaries, we might want to mount the database volume
+# but we can include a default one.
+COPY database/database.sqlite /app/database/database.sqlite
 
-# Install PHP dependencies
-RUN composer install --no-dev --no-scripts --no-progress --prefer-dist --optimize-autoloader
+# Expose the default port
+EXPOSE 8080
 
-# Copy application files
-COPY . .
-
-# Copy built assets from the previous stage
-COPY --from=asset-builder /app/public/build ./public/build
-
-# Set permissions for Laravel storage and bootstrap/cache directories
-RUN chown -R www-data:www-data /app/storage /app/bootstrap/cache \
-    && chmod -R 755 /app/storage /app/bootstrap/cache
-
-# Expose port 8000
-EXPOSE 8000
-
-# Create a non-root user
-ARG USER=appuser
-RUN useradd ${USER} \
-    && setcap CAP_NET_BIND_SERVICE=+eip /usr/local/bin/frankenphp \
-    && chown -R ${USER}:${USER} /app /data/caddy /config/caddy
-
-USER ${USER}
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD php artisan about --json | grep -q '"status":"ok"' || exit 1
-
-# Default command to run FrankenPHP
-CMD ["frankenphp", "php-server", "-r", "public/", "--listen", ":8000"]
+# Run the standalone binary
+# We tell it to run the PHP server on port 8080
+ENTRYPOINT ["/xpense", "php-server", "--listen", ":8080"]
