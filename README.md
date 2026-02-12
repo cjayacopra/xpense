@@ -13,7 +13,13 @@ This application is designed to work on every system with Docker. It uses **Lara
 
 ### Quick Start
 
-The easiest way to set up the development environment is to run the installation script:
+The easiest way to get started is with our automated installation script:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/cjayacopra/xpense/main/install.sh | bash
+```
+
+Alternatively, if you have already cloned the repository:
 
 ```bash
 chmod +x install.sh

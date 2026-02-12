@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Xpense - Docker Development Environment Setup
-# Usage: ./install.sh
+# Usage: 
+#   Local: ./install.sh
+#   Remote: curl -fsSL https://raw.githubusercontent.com/cjayacopra/xpense/main/install.sh | bash
 
 set -e
 
@@ -22,11 +24,32 @@ for dep in git docker; do
     command -v "$dep" >/dev/null 2>&1 || error "Missing dependency: $dep"
 done
 
+# If .env.example is not in current directory, we might need to clone
+if [ ! -f ".env.example" ]; then
+    log "Repository not detected in current directory. Preparing to clone..."
+    
+    INSTALL_DIR="xpense"
+    if [ -d "$INSTALL_DIR" ]; then
+        warn "Directory '$INSTALL_DIR' already exists. Navigating into it..."
+    else
+        log "Cloning Xpense repository into './$INSTALL_DIR'..."
+        git clone https://github.com/cjayacopra/xpense.git "$INSTALL_DIR"
+    fi
+    cd "$INSTALL_DIR"
+fi
+
+# Final check for .env.example before proceeding
+if [ ! -f ".env.example" ]; then
+    error "Could not find .env.example. Please ensure you are running this script from the root of the Xpense repository."
+fi
+
 # Configure .env
 log "Configuring environment..."
 if [ ! -f ".env" ]; then
     cp .env.example .env
     log "Environment file created from .env.example"
+else
+    log ".env file already exists, skipping creation."
 fi
 
 # Setup database file
